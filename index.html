@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activity 2 — Sequence &amp; Spot the Error</title>
+<style>
+:root{
+  --bg:#eef2f6;--surface:#ffffff;--surface-2:#f6f9fb;--ink:#0e2233;--ink-2:#41607a;
+  --ink-3:#7593aa;--line:#d8e3ec;--brand:#0d6e6e;--brand-2:#0f8b8b;--brand-soft:#e2f4f3;
+  --accent:#c2410c;--accent-soft:#fdece3;--ok:#15803d;--ok-soft:#e6f6ec;--bad:#b91c1c;
+  --bad-soft:#fdeaea;--warn:#a16207;--warn-soft:#fdf4e3;--violet:#6d28d9;--violet-soft:#f3e8ff;
+  --shadow:0 10px 30px rgba(13,50,80,.10);--radius:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;
+  line-height:1.5;padding-bottom:88px;
+}
+.topbar{
+  position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:14px;
+  padding:10px 22px;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);flex-wrap:wrap;
+}
+.brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:14.5px;letter-spacing:-.1px}
+.logo{width:34px;height:34px;border-radius:10px;flex:0 0 auto;
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));
+  display:grid;place-items:center;color:#fff;font-size:17px}
+.brand small{display:block;font-weight:600;font-size:10.5px;color:var(--ink-3);letter-spacing:.7px;text-transform:uppercase}
+.spacer{flex:1}
+.tools{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.tbtn{
+  border:1px solid var(--line);background:var(--surface-2);color:var(--ink-2);
+  padding:8px 14px;border-radius:11px;font-size:12.5px;font-weight:700;
+  cursor:pointer;transition:.18s;font-family:inherit;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.tbtn:hover{background:var(--brand-soft);color:var(--brand);border-color:var(--brand)}
+.tbtn.primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;border:none}
+.tbtn.primary:hover{filter:brightness(1.08)}
+.timer{display:flex;align-items:center;gap:9px;background:var(--surface-2);
+  border:1px solid var(--line);border-radius:11px;padding:5px 8px 5px 13px}
+.timer .clock{font-family:"SF Mono",Consolas,monospace;font-size:16px;font-weight:800;
+  color:var(--brand);letter-spacing:.5px;min-width:62px;text-align:center}
+.timer.warning .clock{color:var(--warn)}
+.timer.danger .clock{color:var(--bad);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.4}}
+.timer button{border:none;background:var(--brand);color:#fff;width:28px;height:28px;
+  border-radius:8px;font-size:12px;cursor:pointer;display:grid;place-items:center;
+  font-family:inherit;transition:.18s}
+.timer button:hover{filter:brightness(1.12)}
+.timer button.reset{background:var(--ink-3)}
+.wrap{max-width:1180px;margin:0 auto;padding:30px 22px 40px}
+.hero{background:linear-gradient(135deg,var(--brand-soft),#ffffff 65%);
+  border:1px solid var(--line);border-radius:22px;padding:28px 32px;
+  box-shadow:var(--shadow);margin-bottom:24px}
+.kicker{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800;
+  letter-spacing:1.3px;text-transform:uppercase;color:var(--violet);background:var(--violet-soft);
+  padding:5px 12px;border-radius:999px;margin-bottom:14px}
+h1{font-size:clamp(24px,3.4vw,36px);letter-spacing:-.7px;line-height:1.15;margin-bottom:14px}
+.rule{height:4px;width:74px;border-radius:4px;
+  background:linear-gradient(90deg,var(--brand),var(--brand-2));margin-bottom:18px}
+.chips{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:20px}
+.chip{display:inline-flex;align-items:center;gap:7px;background:var(--surface);
+  border:1px solid var(--line);padding:7px 14px;border-radius:999px;
+  font-size:12.6px;font-weight:700;color:var(--ink-2);box-shadow:0 2px 6px rgba(13,50,80,.05)}
+.chip b{color:var(--brand)}
+.instructions{background:var(--surface);border:1px solid var(--line);
+  border-left:4px solid var(--brand);border-radius:0 14px 14px 0;
+  padding:16px 22px 16px 42px;font-size:13.8px;color:var(--ink-2)}
+.instructions li{margin-bottom:7px}
+.instructions li:last-child{margin-bottom:0}
+.instructions li::marker{color:var(--brand);font-weight:800}
+.instructions b{color:var(--ink)}
+.scoreboard{background:var(--surface);border:1px solid var(--line);border-radius:20px;
+  padding:22px 26px;box-shadow:var(--shadow);margin-bottom:30px;
+  display:grid;grid-template-columns:1fr auto;gap:26px;align-items:center}
+.score-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px}
+.score-item .lbl{display:flex;justify-content:space-between;align-items:baseline;
+  font-size:12.2px;font-weight:800;color:var(--ink-2);text-transform:uppercase;
+  letter-spacing:.6px;margin-bottom:7px}
+.score-item .lbl span{color:var(--brand);font-size:13px;letter-spacing:0}
+.bar{height:9px;background:var(--line);border-radius:9px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;border-radius:9px;
+  background:linear-gradient(90deg,var(--brand),var(--brand-2));
+  transition:width .5s cubic-bezier(.4,0,.2,1)}
+.total-box{text-align:center;padding:14px 26px;
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));
+  border-radius:18px;color:#fff;min-width:150px}
+.total-box b{display:block;font-size:40px;line-height:1;letter-spacing:-1.5px}
+.total-box span{font-size:11px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;opacity:.85}
+.section{background:var(--surface);border:1px solid var(--line);border-radius:20px;
+  box-shadow:var(--shadow);margin-bottom:24px;overflow:hidden}
+.sec-head{display:flex;align-items:center;gap:14px;padding:18px 24px;
+  background:var(--surface-2);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.sec-head .num{width:34px;height:34px;border-radius:11px;flex:0 0 auto;
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;
+  display:grid;place-items:center;font-size:14px;font-weight:900}
+.sec-head h2{font-size:17px;letter-spacing:-.3px;flex:1;min-width:200px}
+.sec-head .meta{font-size:11.6px;font-weight:800;color:var(--ink-3);
+  letter-spacing:.5px;text-transform:uppercase}
+.sec-body{padding:22px 24px}
+.sec-hint{font-size:12.8px;color:var(--ink-2);background:var(--brand-soft);
+  border-left:3px solid var(--brand);border-radius:0 10px 10px 0;
+  padding:11px 16px;margin-bottom:18px;line-height:1.6}
+.sec-hint b{color:var(--ink)}
+.seq-list{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;user-select:none}
+.seq-item{display:flex;align-items:center;gap:13px;background:var(--surface-2);
+  border:2px solid var(--line);border-radius:14px;padding:13px 16px;
+  cursor:grab;transition:.18s;position:relative}
+.seq-item:hover{border-color:var(--brand);background:var(--brand-soft);transform:translateX(3px)}
+.seq-item.dragging{opacity:.35;transform:scale(.98)}
+.seq-item.drag-over{border-color:var(--violet);background:var(--violet-soft);
+  box-shadow:0 0 0 4px rgba(109,40,217,.13)}
+.seq-item.selected{border-color:var(--violet);background:var(--violet-soft);
+  box-shadow:0 0 0 4px rgba(109,40,217,.15)}
+.seq-item.correct{border-color:var(--ok);background:var(--ok-soft)}
+.seq-item.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.seq-pos{width:34px;height:34px;border-radius:10px;flex:0 0 auto;
+  display:grid;place-items:center;background:var(--surface);
+  border:1.5px solid var(--line);font-size:14px;font-weight:900;color:var(--brand)}
+.seq-item.correct .seq-pos{background:var(--ok);color:#fff;border-color:var(--ok)}
+.seq-item.wrong .seq-pos{background:var(--bad);color:#fff;border-color:var(--bad)}
+.seq-grip{font-size:15px;color:var(--ink-3);flex:0 0 auto;
+  cursor:grab;letter-spacing:-2px;line-height:1}
+.seq-icon{font-size:20px;flex:0 0 auto;line-height:1}
+.seq-text{flex:1;font-size:13.6px;font-weight:600;color:var(--ink);line-height:1.45}
+.seq-badge{font-size:11px;font-weight:900;letter-spacing:.5px;
+  padding:4px 10px;border-radius:999px;opacity:0;transition:.2s;flex:0 0 auto}
+.seq-item.correct .seq-badge{opacity:1;background:var(--ok);color:#fff}
+.seq-item.wrong .seq-badge{opacity:1;background:var(--bad);color:#fff}
+.seq-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.btn{border:none;border-radius:12px;padding:11px 22px;font-size:13px;font-weight:800;
+  cursor:pointer;font-family:inherit;transition:.2s;
+  display:inline-flex;align-items:center;gap:8px}
+.btn.primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff}
+.btn.primary:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn.ghost{background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2)}
+.btn.ghost:hover{background:var(--brand-soft);color:var(--brand);border-color:var(--brand)}
+.btn:disabled{opacity:.55;cursor:default;transform:none;filter:none}
+.seq-result{margin-left:auto;font-size:13px;font-weight:900;padding:7px 16px;
+  border-radius:999px;background:var(--line);color:var(--ink-3);transition:.3s}
+.seq-result.ok{background:var(--ok-soft);color:var(--ok)}
+.seq-result.part{background:var(--warn-soft);color:var(--warn)}
+.seq-result.bad{background:var(--bad-soft);color:var(--bad)}
+.err-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}
+.err-card{background:var(--surface-2);border:2px solid var(--line);border-radius:16px;
+  padding:18px;transition:.2s;display:flex;flex-direction:column;gap:14px}
+.err-card:hover{border-color:var(--brand)}
+.err-card.checked-ok{border-color:var(--ok);background:var(--ok-soft)}
+.err-card.checked-bad{border-color:var(--bad);background:var(--bad-soft)}
+.err-card.missed{border-color:var(--warn);background:var(--warn-soft)}
+.err-head{display:flex;align-items:center;gap:10px}
+.err-num{width:28px;height:28px;border-radius:9px;flex:0 0 auto;
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;
+  display:grid;place-items:center;font-size:12.5px;font-weight:900}
+.err-head .tag{font-size:10.5px;font-weight:900;letter-spacing:.7px;text-transform:uppercase;
+  padding:4px 10px;border-radius:999px;background:var(--surface);color:var(--ink-3);
+  border:1px solid var(--line)}
+.err-card.checked-ok .tag{background:var(--ok);color:#fff;border-color:var(--ok)}
+.err-card.checked-bad .tag{background:var(--bad);color:#fff;border-color:var(--bad)}
+.err-card.missed .tag{background:var(--warn);color:#fff;border-color:var(--warn)}
+.err-text{font-size:13.5px;line-height:1.65;color:var(--ink);font-weight:600}
+.err-toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tog{border:1.5px solid var(--line);background:var(--surface);color:var(--ink-2);
+  padding:9px 12px;border-radius:11px;font-size:12.4px;font-weight:800;
+  cursor:pointer;font-family:inherit;transition:.16s;
+  display:flex;align-items:center;justify-content:center;gap:6px}
+.tog:hover{border-color:var(--brand);color:var(--brand)}
+.tog.active[data-val="error"]{background:var(--bad);border-color:var(--bad);color:#fff}
+.tog.active[data-val="correct"]{background:var(--ok);border-color:var(--ok);color:#fff}
+.tog:disabled{cursor:default;opacity:.9}
+.err-ref{display:flex;flex-direction:column;gap:6px;max-height:0;overflow:hidden;
+  transition:max-height .3s ease, opacity .25s;opacity:0}
+.err-ref.show{max-height:110px;opacity:1}
+.err-ref label{font-size:11px;font-weight:900;letter-spacing:1px;
+  text-transform:uppercase;color:var(--ink-3)}
+.err-ref select{width:100%;border:1.5px solid var(--line);background:var(--surface);
+  color:var(--ink);padding:9px 12px;border-radius:10px;font-size:12.6px;
+  font-family:inherit;font-weight:600;cursor:pointer;transition:.16s;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%237593aa' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:34px}
+.err-ref select:hover,.err-ref select:focus{border-color:var(--brand);outline:none}
+.err-ref select.correct{border-color:var(--ok);background-color:var(--ok-soft);
+  color:var(--ok);font-weight:800}
+.err-ref select.wrong{border-color:var(--bad);background-color:var(--bad-soft);
+  color:var(--bad);font-weight:800}
+.err-explain{display:none;background:var(--violet-soft);border-left:3px solid var(--violet);
+  border-radius:0 10px 10px 0;padding:11px 14px;font-size:12.6px;line-height:1.6;color:#4c1d95}
+.err-explain.show{display:block;animation:fadeUp .3s}
+.err-explain b{color:#4c1d95;font-weight:900}
+@keyframes fadeUp{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+.err-summary{display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+.debrief{background:linear-gradient(135deg,var(--violet-soft),var(--brand-soft));
+  border:2px dashed var(--violet);border-radius:var(--radius);
+  padding:24px 28px;margin-top:24px}
+.debrief h3{display:flex;align-items:center;gap:10px;font-size:16px;
+  color:var(--violet);margin-bottom:6px}
+.debrief h3 .ic{width:32px;height:32px;border-radius:10px;background:var(--violet);
+  color:#fff;display:grid;place-items:center;font-size:16px}
+.debrief p{font-size:13.2px;color:var(--ink-2);margin-bottom:14px}
+.debrief ul{padding-left:20px;font-size:13px;line-height:1.75;color:var(--ink-2)}
+.debrief ul li::marker{color:var(--violet);font-weight:800}
+.debrief ul li{margin-bottom:6px}
+.debrief b{color:var(--ink)}
+.footbar{position:fixed;bottom:0;left:0;right:0;z-index:45;display:flex;
+  align-items:center;gap:14px;padding:12px 24px;background:rgba(255,255,255,.94);
+  backdrop-filter:blur(10px);border-top:1px solid var(--line);
+  box-shadow:0 -6px 24px rgba(13,50,80,.08);flex-wrap:wrap}
+.foot-score{font-size:14px;font-weight:900;color:var(--brand);
+  display:flex;align-items:baseline;gap:5px}
+.foot-score b{font-size:22px;letter-spacing:-.5px}
+.foot-score span{font-size:11.5px;color:var(--ink-3);font-weight:800;
+  letter-spacing:.6px;text-transform:uppercase}
+.footbar .spacer{flex:1}
+.toast{position:fixed;left:50%;bottom:96px;transform:translate(-50%,20px);
+  background:var(--ink);color:#fff;padding:12px 24px;border-radius:12px;
+  font-size:13.2px;font-weight:800;opacity:0;pointer-events:none;
+  transition:.3s;z-index:99;box-shadow:0 14px 34px rgba(0,0,0,.28);
+  max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:820px){
+  .wrap{padding:20px 14px 30px}
+  .hero{padding:22px 18px}
+  .scoreboard{grid-template-columns:1fr;gap:18px;padding:18px}
+  .total-box{min-width:0;padding:12px}
+  .total-box b{font-size:32px}
+  .sec-head{padding:14px 18px}
+  .sec-body{padding:18px}
+  .brand small{display:none}
+  .timer{padding:4px 6px 4px 10px}
+  .timer .clock{font-size:14px;min-width:54px}
+  .err-grid{grid-template-columns:1fr}
+  .debrief{padding:18px 20px}
+}
+@media print{
+  body{background:#fff;padding:0}
+  .topbar,.footbar,.toast,.btn,.tog,.err-toggle,.seq-actions{display:none!important}
+  .wrap{max-width:none;padding:0}
+  .hero,.scoreboard,.section,.debrief{box-shadow:none;break-inside:avoid;page-break-inside:avoid}
+  .err-explain,.err-ref{display:block!important;max-height:none!important;opacity:1!important}
+  .seq-item{border:1px solid #999}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">🎯</div>
+    <div>Activity 2 — Sequence &amp; Spot the Error
+      <small>Basic Microbiology · QC Yearly Training Plan 2026</small>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <div class="tools">
+    <div class="timer" id="timer">
+      <span class="clock" id="clock">10:00</span>
+      <button id="startBtn" title="Start / Pause">▶</button>
+      <button class="reset" id="resetTimer" title="Reset timer">↺</button>
+    </div>
+    <button class="tbtn" id="checkAllBtn">✓ Check All</button>
+    <button class="tbtn" id="printBtn">🖨 Print</button>
+    <button class="tbtn" id="resetBtn">↺ Reset</button>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="hero">
+    <span class="kicker">🎯 Group Activity</span>
+    <h1>Activity 2 — Sequence &amp; Spot the Error</h1>
+    <div class="rule"></div>
+    <div class="chips">
+      <span class="chip">👥 Groups of <b>3–4</b></span>
+      <span class="chip">⏱ <b>10 minutes</b></span>
+      <span class="chip">🃏 <b>Sequence cards</b></span>
+      <span class="chip">🎤 <b>Debrief</b></span>
+      <span class="chip">🏆 <b>10 points</b></span>
+    </div>
+    <ol class="instructions">
+      <li>Your facilitator will provide <b>shuffled gowning step cards</b> for an aseptic gowning procedure.</li>
+      <li>Arrange the cards in the <b>correct order</b> — donning sequence, top-down approach.</li>
+      <li>Identify <b>3 common gowning errors</b> that could compromise sterility.</li>
+      <li>Explain <b>why each error matters</b> — link to EU GMP Annex 1 requirements.</li>
+      <li>Present your sequence and findings to the class — <b>2 minutes per group</b>.</li>
+    </ol>
+  </section>
+
+  <section class="scoreboard">
+    <div class="score-grid">
+      <div class="score-item">
+        <div class="lbl">Correct Sequence <span id="s1">0 / 4.0</span></div>
+        <div class="bar"><i id="b1"></i></div>
+      </div>
+      <div class="score-item">
+        <div class="lbl">Errors Identified <span id="s2">0 / 3.0</span></div>
+        <div class="bar"><i id="b2"></i></div>
+      </div>
+      <div class="score-item">
+        <div class="lbl">Correct References <span id="s3">0 / 3.0</span></div>
+        <div class="bar"><i id="b3"></i></div>
+      </div>
+    </div>
+    <div class="total-box">
+      <b id="totalScore">0.0</b>
+      <span>out of 10</span>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">
+      <span class="num">A</span>
+      <h2>Arrange the Gowning Sequence</h2>
+      <span class="meta">Drag to reorder · 4 pts</span>
+    </div>
+    <div class="sec-body">
+      <div class="sec-hint">
+        <b>How to play:</b> Drag the cards into the correct top-down sequence — or tap one card, then tap another to swap their positions.
+        Position <b>1</b> is the very first step, position <b>12</b> is the last.
+      </div>
+      <div class="seq-list" id="seqList"></div>
+      <div class="seq-actions">
+        <button class="btn primary" id="checkSeqBtn">✓ Check Sequence</button>
+        <button class="btn ghost" id="shuffleSeqBtn">🔀 Shuffle</button>
+        <span class="seq-result" id="seqResult">Not checked</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">
+      <span class="num">B</span>
+      <h2>Spot the Error — Practice Descriptions</h2>
+      <span class="meta">3 errors · 3 pts · 3 refs</span>
+    </div>
+    <div class="sec-body">
+      <div class="sec-hint">
+        <b>Read each practice description carefully.</b> Decide whether it is a <b>gowning error</b> or a <b>correct practice</b>.
+        Exactly <b>three</b> of the six cards contain errors — when you flag a card as an error, you must also select the
+        correct <b>EU GMP Annex 1</b> reference that applies.
+      </div>
+      <div class="err-grid" id="errGrid"></div>
+      <div class="err-summary">
+        <button class="btn primary" id="checkErrBtn">✓ Check Errors &amp; References</button>
+        <span class="seq-result" id="errResult">Not checked</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="debrief">
+    <h3><span class="ic">🎤</span> Debrief — Present Your Findings</h3>
+    <p>Each group has <b>2 minutes</b> to present their sequence and findings. Use these prompts to structure your debrief:</p>
+    <ul>
+      <li>Show your <b>final sequence</b> — explain why you placed each step where you did.</li>
+      <li>Identify your <b>3 errors</b> and explain <b>why each one compromises sterility</b>.</li>
+      <li>Link each error to the relevant <b>EU GMP Annex 1</b> requirement.</li>
+      <li>Propose a <b>practical CAPA</b> for each error — what would you change in the procedure or training?</li>
+      <li>Compare with other groups — did anyone sequence or interpret a step differently?</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer class="footbar">
+  <div class="foot-score">
+    <b id="footTotal">0.0</b>
+    <span>/ 10 points</span>
+  </div>
+  <div class="spacer"></div>
+  <button class="tbtn primary" id="downloadBtn">⬇ Download Results</button>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   DATA — GOWNING SEQUENCE (12 STEPS, TOP-DOWN)
+   ========================================================= */
+const STEPS = [
+  { id:'s1',  order:1,  icon:'💍', text:'Remove all jewellery, watches and cosmetics.' },
+  { id:'s2',  order:2,  icon:'👕', text:'Take off external (street) clothing.' },
+  { id:'s3',  order:3,  icon:'🥋', text:'Wear factory garment.' },
+  { id:'s4',  order:4,  icon:'🧢', text:'Wear hairnet — all hair must be fully covered.' },
+  { id:'s5',  order:5,  icon:'🧼', text:'Wash hands with disinfectant and clean socks.' },
+  { id:'s6',  order:6,  icon:'😷', text:'Wear face mask and sterile gloves.' },
+  { id:'s7',  order:7,  icon:'📦', text:'Take out sterile jumpsuit from packaging.' },
+  { id:'s8',  order:8,  icon:'🧣', text:'Wear sterile hood.' },
+  { id:'s9',  order:9,  icon:'🥼', text:'Wear sterile gown.' },
+  { id:'s10', order:10, icon:'🥾', text:'Wear sterile booties.' },
+  { id:'s11', order:11, icon:'💧', text:'Disinfect gloves with sterile 70% IPA.' },
+  { id:'s12', order:12, icon:'🪞', text:'Perform visual check in mirror — gown cleanliness and integrity.' }
+];
+
+/* =========================================================
+   DATA — EU GMP ANNEX 1 REFERENCES
+   ========================================================= */
+const REFS = [
+  { id:'A', text:'EU GMP Annex 1 — Personnel Gowning & Qualification' },
+  { id:'B', text:'EU GMP Annex 1 — Gown Integrity & Cleanliness Checks' },
+  { id:'C', text:'EU GMP Annex 1 — Aseptic Technique & Glove Disinfection' },
+  { id:'D', text:'EU GMP Annex 1 — Personnel Monitoring after Critical Interventions' },
+  { id:'E', text:'EU GMP Annex 1 — Contamination Control Strategy (CCS)' }
+];
+
+/* =========================================================
+   DATA — ERROR / CORRECT PRACTICE CARDS
+   ========================================================= */
+const ERROR_CARDS = [
+  {
+    id:'e1',
+    text:'A technician enters the gowning room and puts on the factory garment over their street clothes without first removing external clothing.',
+    isError:true,
+    correctRef:'A',
+    reason:'External (street) clothing must be <b>removed before</b> donning the factory garment. Street clothing carries particles and microorganisms from outside the facility and compromises the gowning cascade.',
+    refExplain:'The correct donning sequence and gowning qualification requirements are covered under <b>Personnel Gowning & Qualification</b>.'
+  },
+  {
+    id:'e2',
+    text:'An operator removes the sterile gown during a short break, hangs it in the airlock, and re-dons it for the next session.',
+    isError:true,
+    correctRef:'B',
+    reason:'Gowns must <b>never be reused</b>. Once removed, a gown loses integrity and may be contaminated. A fresh sterile gown must be donned for each entry into the cleanroom.',
+    refExplain:'Gown cleanliness, integrity and single-use requirements are covered under <b>Gown Integrity & Cleanliness Checks</b>.'
+  },
+  {
+    id:'e3',
+    text:'After clearing a jammed stopper in the Grade A filling zone, the operator resumes filling without performing a finger dab.',
+    isError:true,
+    correctRef:'D',
+    reason:'Personnel monitoring — <b>finger dabs and gown sampling</b> — is required after critical interventions. Without it, glove contamination goes undetected and may transfer directly to the product.',
+    refExplain:'Post-intervention personnel monitoring requirements are covered under <b>Personnel Monitoring after Critical Interventions</b>.'
+  },
+  {
+    id:'e4',
+    text:'The operator ensures all hair is fully covered by the hairnet before donning the sterile gown.',
+    isError:false,
+    correctRef:null,
+    reason:'Correct practice. All hair must be fully covered to prevent shedding of particles and microorganisms into the critical zone.',
+    refExplain:''
+  },
+  {
+    id:'e5',
+    text:'Gloves are disinfected with sterile 70% IPA immediately before each critical intervention.',
+    isError:false,
+    correctRef:null,
+    reason:'Correct practice. Regular glove disinfection during operations is required to maintain glove cleanliness between interventions.',
+    refExplain:''
+  },
+  {
+    id:'e6',
+    text:'The operator performs a visual check in the mirror for gown cleanliness and integrity before entering the cleanroom.',
+    isError:false,
+    correctRef:null,
+    reason:'Correct practice. EU GMP Annex 1 requires a visual check of the gown for cleanliness and integrity immediately prior to and after gowning.',
+    refExplain:''
+  }
+];
+
+/* =========================================================
+   STATE
+   ========================================================= */
+let seqOrder = [];
+let seqChecked = false;
+let seqCorrectCount = 0;
+let seqPts = 0;
+
+let errorFlags = {};
+let refSelections = {};
+let errChecked = false;
+let errCorrectCount = 0;
+let falsePositives = 0;
+let errPts = 0;
+let refPts = 0;
+
+/* =========================================================
+   SHUFFLE
+   ========================================================= */
+function shuffle(arr){
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* =========================================================
+   RENDER SEQUENCE
+   ========================================================= */
+const seqList = document.getElementById('seqList');
+
+function renderSequence(){
+  seqList.innerHTML = '';
+  seqOrder.forEach((stepId, idx) => {
+    const step = STEPS.find(s => s.id === stepId);
+    const item = document.createElement('div');
+    item.className = 'seq-item';
+    item.draggable = true;
+    item.dataset.idx = idx;
+    item.dataset.id = stepId;
+    item.innerHTML = `
+      <span class="seq-grip" aria-hidden="true">⋮⋮</span>
+      <span class="seq-pos">${idx + 1}</span>
+      <span class="seq-icon">${step.icon}</span>
+      <span class="seq-text">${step.text}</span>
+      <span class="seq-badge">✓</span>
+    `;
+    seqList.appendChild(item);
+  });
+
+  if (seqChecked) applySequenceCheckVisuals();
+}
+
+/* =========================================================
+   DRAG & DROP + CLICK TO SWAP
+   ========================================================= */
+let dragSrcIdx = null;
+let selectedIdx = null;
+
+seqList.addEventListener('dragstart', e => {
+  const item = e.target.closest('.seq-item');
+  if (!item) return;
+  dragSrcIdx = Number(item.dataset.idx);
+  item.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  try { e.dataTransfer.setData('text/plain', String(dragSrcIdx)); } catch(_){}
+});
+
+seqList.addEventListener('dragend', e => {
+  const item = e.target.closest('.seq-item');
+  if (item) item.classList.remove('dragging');
+  seqList.querySelectorAll('.seq-item').forEach(el => el.classList.remove('drag-over'));
+  dragSrcIdx = null;
+});
+
+seqList.addEventListener('dragover', e => {
+  e.preventDefault();
+  const item = e.target.closest('.seq-item');
+  if (!item) return;
+  e.dataTransfer.dropEffect = 'move';
+  seqList.querySelectorAll('.seq-item').forEach(el => el.classList.remove('drag-over'));
+  item.classList.add('drag-over');
+});
+
+seqList.addEventListener('drop', e => {
+  e.preventDefault();
+  const item = e.target.closest('.seq-item');
+  if (!item || dragSrcIdx === null) return;
+  const dropIdx = Number(item.dataset.idx);
+  swapPositions(dragSrcIdx, dropIdx);
+  dragSrcIdx = null;
+});
+
+seqList.addEventListener('click', e => {
+  const item = e.target.closest('.seq-item');
+  if (!item) return;
+  const idx = Number(item.dataset.idx);
+  if (selectedIdx === null){
+    selectedIdx = idx;
+    item.classList.add('selected');
+  } else if (selectedIdx === idx){
+    item.classList.remove('selected');
+    selectedIdx = null;
+  } else {
+    swapPositions(selectedIdx, idx);
+    selectedIdx = null;
+  }
+});
+
+function swapPositions(a, b){
+  if (a === b) return;
+  [seqOrder[a], seqOrder[b]] = [seqOrder[b], seqOrder[a]];
+  seqChecked = false;
+  applySequenceIdleVisuals();
+  renderSequence();
+  updateScores();
+}
+
+function applySequenceIdleVisuals(){
+  seqList.querySelectorAll('.seq-item').forEach(el => {
+    el.classList.remove('correct','wrong','selected','drag-over');
+  });
+  const res = document.getElementById('seqResult');
+  res.className = 'seq-result';
+  res.textContent = 'Not checked';
+}
+
+/* =========================================================
+   CHECK SEQUENCE
+   ========================================================= */
+function checkSequence(){
+  seqChecked = true;
+  seqCorrectCount = 0;
+
+  seqOrder.forEach((stepId, idx) => {
+    const step = STEPS.find(s => s.id === stepId);
+    if (step.order === idx + 1) seqCorrectCount++;
+  });
+
+  seqPts = (seqCorrectCount / STEPS.length) * 4;
+  seqPts = Math.round(seqPts * 10) / 10;
+
+  applySequenceCheckVisuals();
+  updateScores();
+
+  const res = document.getElementById('seqResult');
+  if (seqCorrectCount === STEPS.length){
+    res.className = 'seq-result ok';
+    res.textContent = `✓ Perfect — 12/12 correct · ${seqPts.toFixed(1)} pts`;
+  } else if (seqCorrectCount >= 7){
+    res.className = 'seq-result part';
+    res.textContent = `◐ ${seqCorrectCount}/12 correct · ${seqPts.toFixed(1)} pts`;
+  } else {
+    res.className = 'seq-result bad';
+    res.textContent = `✗ ${seqCorrectCount}/12 correct · ${seqPts.toFixed(1)} pts`;
+  }
+}
+
+function applySequenceCheckVisuals(){
+  seqList.querySelectorAll('.seq-item').forEach((el, idx) => {
+    const stepId = el.dataset.id;
+    const step = STEPS.find(s => s.id === stepId);
+    el.classList.remove('correct','wrong','selected','drag-over');
+    if (step.order === idx + 1){
+      el.classList.add('correct');
+      el.querySelector('.seq-badge').textContent = '✓';
+    } else {
+      el.classList.add('wrong');
+      el.querySelector('.seq-badge').textContent = '✗';
+    }
+  });
+}
+
+/* =========================================================
+   RENDER ERROR CARDS
+   ========================================================= */
+const errGrid = document.getElementById('errGrid');
+
+function renderErrorCards(){
+  errGrid.innerHTML = '';
+
+  ERROR_CARDS.forEach((card, i) => {
+    const el = document.createElement('article');
+    el.className = 'err-card';
+    el.dataset.id = card.id;
+
+    el.innerHTML = `
+      <div class="err-head">
+        <span class="err-num">${i + 1}</span>
+        <span class="tag">Not answered</span>
+      </div>
+      <p class="err-text">${card.text}</p>
+      <div class="err-toggle">
+        <button class="tog" data-val="error">⚠️ Error</button>
+        <button class="tog" data-val="correct">✅ Correct Practice</button>
+      </div>
+      <div class="err-ref" data-role="refwrap">
+        <label>Applicable EU GMP Annex 1 Reference</label>
+        <select data-role="ref">
+          <option value="">— Select a reference —</option>
+          ${REFS.map(r => `<option value="${r.id}">${r.text}</option>`).join('')}
+        </select>
+      </div>
+      <div class="err-explain" data-role="explain"></div>
+    `;
+
+    errGrid.appendChild(el);
+  });
+
+  errGrid.addEventListener('click', e => {
+    const tog = e.target.closest('.tog');
+    if (!tog) return;
+    const card = tog.closest('.err-card');
+    const id = card.dataset.id;
+    const val = tog.dataset.val;
+
+    if (errorFlags[id] === val){
+      errorFlags[id] = null;
+    } else {
+      errorFlags[id] = val;
+    }
+
+    errChecked = false;
+    applyErrIdleVisuals();
+    renderErrorCardState(id);
+    updateScores();
+  });
+
+  errGrid.addEventListener('change', e => {
+    const sel = e.target.closest('select[data-role="ref"]');
+    if (!sel) return;
+    const card = sel.closest('.err-card');
+    refSelections[card.dataset.id] = sel.value;
+    errChecked = false;
+    applyErrIdleVisuals();
+    renderErrorCardState(card.dataset.id);
+    updateScores();
+  });
+}
+
+function renderErrorCardState(id){
+  const card = document.querySelector(`.err-card[data-id="${id}"]`);
+  if (!card) return;
+
+  const flag = errorFlags[id];
+  const tag = card.querySelector('.tag');
+  const togs = card.querySelectorAll('.tog');
+  const refWrap = card.querySelector('[data-role="refwrap"]');
+  const sel = card.querySelector('[data-role="ref"]');
+
+  togs.forEach(t => {
+    t.classList.remove('active');
+    if (t.dataset.val === flag) t.classList.add('active');
+    t.disabled = false;
+  });
+
+  card.classList.remove('checked-ok','checked-bad','missed');
+
+  if (!errChecked){
+    if (flag === 'error'){
+      tag.textContent = 'Flagged as Error';
+      tag.style.background = 'var(--bad)';
+      tag.style.color = '#fff';
+      tag.style.borderColor = 'var(--bad)';
+    } else if (flag === 'correct'){
+      tag.textContent = 'Marked as Correct';
+      tag.style.background = 'var(--ok)';
+      tag.style.color = '#fff';
+      tag.style.borderColor = 'var(--ok)';
+    } else {
+      tag.textContent = 'Not answered';
+      tag.style.background = '';
+      tag.style.color = '';
+      tag.style.borderColor = '';
+    }
+  }
+
+  if (flag === 'error'){
+    refWrap.classList.add('show');
+  } else {
+    refWrap.classList.remove('show');
+    sel.value = '';
+    refSelections[id] = '';
+  }
+}
+
+function applyErrIdleVisuals(){
+  document.querySelectorAll('.err-card').forEach(card => {
+    card.classList.remove('checked-ok','checked-bad','missed');
+    const tag = card.querySelector('.tag');
+    tag.style.background = '';
+    tag.style.color = '';
+    tag.style.borderColor = '';
+    const sel = card.querySelector('[data-role="ref"]');
+    sel.classList.remove('correct','wrong');
+    const ex = card.querySelector('[data-role="explain"]');
+    ex.classList.remove('show');
+    ex.innerHTML = '';
+    card.querySelectorAll('.tog').forEach(t => t.disabled = false);
+    renderErrorCardState(card.dataset.id);
+  });
+  const res = document.getElementById('errResult');
+  res.className = 'seq-result';
+  res.textContent = 'Not checked';
+}
+
+/* =========================================================
+   CHECK ERRORS
+   ========================================================= */
+function checkErrors(){
+  errChecked = true;
+  errCorrectCount = 0;
+  falsePositives = 0;
+  refPts = 0;
+
+  ERROR_CARDS.forEach(card => {
+    const id = card.id;
+    const flag = errorFlags[id];
+    const el = document.querySelector(`.err-card[data-id="${id}"]`);
+    const tag = el.querySelector('.tag');
+    const sel = el.querySelector('[data-role="ref"]');
+    const ex = el.querySelector('[data-role="explain"]');
+
+    el.querySelectorAll('.tog').forEach(t => t.disabled = true);
+
+    el.classList.remove('checked-ok','checked-bad','missed');
+    tag.style.background = '';
+    tag.style.color = '';
+    tag.style.borderColor = '';
+
+    if (card.isError){
+      if (flag === 'error'){
+        errCorrectCount++;
+        el.classList.add('checked-ok');
+        tag.textContent = '✓ Correctly Flagged';
+        tag.style.background = 'var(--ok)';
+        tag.style.color = '#fff';
+        tag.style.borderColor = 'var(--ok)';
+
+        if (refSelections[id] === card.correctRef){
+          refPts += 1;
+          sel.classList.add('correct');
+          sel.classList.remove('wrong');
+        } else {
+          sel.classList.add('wrong');
+          sel.classList.remove('correct');
+        }
+      } else {
+        el.classList.add('missed');
+        tag.textContent = '⚠ Error Missed';
+        tag.style.background = 'var(--warn)';
+        tag.style.color = '#fff';
+        tag.style.borderColor = 'var(--warn)';
+        sel.classList.add('wrong');
+      }
+    } else {
+      if (flag === 'error'){
+        falsePositives++;
+        el.classList.add('checked-bad');
+        tag.textContent = '✗ Wrongly Flagged';
+        tag.style.background = 'var(--bad)';
+        tag.style.color = '#fff';
+        tag.style.borderColor = 'var(--bad)';
+      } else if (flag === 'correct'){
+        el.classList.add('checked-ok');
+        tag.textContent = '✓ Correct Practice';
+        tag.style.background = 'var(--ok)';
+        tag.style.color = '#fff';
+        tag.style.borderColor = 'var(--ok)';
+      } else {
+        el.classList.add('missed');
+        tag.textContent = '⚠ Not Answered';
+      }
+    }
+
+    ex.innerHTML = `<b>Answer:</b> ${card.isError ? 'This IS an error.' : 'This is a CORRECT practice.'}<br>${card.reason}` +
+      (card.isError && card.refExplain ? `<br><br><b>Reference:</b> ${card.refExplain}` : '');
+    ex.classList.add('show');
+  });
+
+  errPts = Math.max(0, Math.min(3, errCorrectCount - falsePositives));
+
+  const res = document.getElementById('errResult');
+  if (errCorrectCount === 3 && falsePositives === 0 && refPts === 3){
+    res.className = 'seq-result ok';
+    res.textContent = `✓ Perfect — 3/3 errors, 3/3 refs`;
+  } else if (errCorrectCount >= 2){
+    res.className = 'seq-result part';
+    res.textContent = `◐ ${errCorrectCount}/3 errors · ${refPts}/3 refs · ${falsePositives} false flag(s)`;
+  } else {
+    res.className = 'seq-result bad';
+    res.textContent = `✗ ${errCorrectCount}/3 errors · ${refPts}/3 refs · ${falsePositives} false flag(s)`;
+  }
+
+  updateScores();
+}
+
+/* =========================================================
+   SCORE UPDATE
+   ========================================================= */
+function updateScores(){
+  const sp = seqChecked ? seqPts : 0;
+  document.getElementById('b1').style.width = (sp / 4 * 100) + '%';
+  document.getElementById('s1').textContent = sp.toFixed(1) + ' / 4.0';
+
+  const ep = errChecked ? errPts : 0;
+  document.getElementById('b2').style.width = (ep / 3 * 100) + '%';
+  document.getElementById('s2').textContent = ep.toFixed(1) + ' / 3.0';
+
+  const rp = errChecked ? refPts : 0;
+  document.getElementById('b3').style.width = (rp / 3 * 100) + '%';
+  document.getElementById('s3').textContent = rp.toFixed(1) + ' / 3.0';
+
+  const total = Math.round((sp + ep + rp) * 10) / 10;
+  document.getElementById('totalScore').textContent = total.toFixed(1);
+  document.getElementById('footTotal').textContent = total.toFixed(1);
+}
+
+/* =========================================================
+   BUTTON WIRING
+   ========================================================= */
+document.getElementById('checkSeqBtn').addEventListener('click', () => {
+  checkSequence();
+  showToast(`✓ Sequence scored — ${seqCorrectCount}/12 in the right place`);
+});
+
+document.getElementById('shuffleSeqBtn').addEventListener('click', () => {
+  seqOrder = shuffle(STEPS.map(s => s.id));
+  seqChecked = false;
+  applySequenceIdleVisuals();
+  renderSequence();
+  updateScores();
+  showToast('🔀 Sequence shuffled');
+});
+
+document.getElementById('checkErrBtn').addEventListener('click', () => {
+  const unanswered = ERROR_CARDS.filter(c => !errorFlags[c.id]).length;
+  if (unanswered > 0){
+    showToast(`⚠ ${unanswered} card(s) still unanswered`);
+    return;
+  }
+  checkErrors();
+  showToast(`✓ Errors & references scored — ${errCorrectCount}/3 errors`);
+});
+
+document.getElementById('checkAllBtn').addEventListener('click', () => {
+  checkSequence();
+  const unanswered = ERROR_CARDS.filter(c => !errorFlags[c.id]).length;
+  if (unanswered === 0){
+    checkErrors();
+    showToast('✓ All sections checked');
+  } else {
+    showToast(`✓ Sequence checked · ${unanswered} card(s) still unanswered`);
+  }
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if (!confirm('Reset all answers and scores?')) return;
+
+  seqOrder = shuffle(STEPS.map(s => s.id));
+  seqChecked = false;
+  seqCorrectCount = 0;
+  seqPts = 0;
+
+  errorFlags = {};
+  refSelections = {};
+  errChecked = false;
+  errCorrectCount = 0;
+  falsePositives = 0;
+  errPts = 0;
+  refPts = 0;
+
+  applySequenceIdleVisuals();
+  renderSequence();
+
+  ERROR_CARDS.forEach(card => {
+    const el = document.querySelector(`.err-card[data-id="${card.id}"]`);
+    el.classList.remove('checked-ok','checked-bad','missed');
+    const tag = el.querySelector('.tag');
+    tag.textContent = 'Not answered';
+    tag.style.background = '';
+    tag.style.color = '';
+    tag.style.borderColor = '';
+    el.querySelectorAll('.tog').forEach(t => {
+      t.classList.remove('active');
+      t.disabled = false;
+    });
+    const sel = el.querySelector('[data-role="ref"]');
+    sel.value = '';
+    sel.classList.remove('correct','wrong');
+    el.querySelector('[data-role="refwrap"]').classList.remove('show');
+    const ex = el.querySelector('[data-role="explain"]');
+    ex.classList.remove('show');
+    ex.innerHTML = '';
+  });
+
+  const res = document.getElementById('errResult');
+  res.className = 'seq-result';
+  res.textContent = 'Not checked';
+
+  updateScores();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  showToast('↺ Activity reset');
+});
+
+document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+/* =========================================================
+   DOWNLOAD RESULTS
+   ========================================================= */
+document.getElementById('downloadBtn').addEventListener('click', () => {
+  const lines = [];
+  lines.push('ACTIVITY 2 — SEQUENCE & SPOT THE ERROR');
+  lines.push('Basic Microbiology · QC Yearly Training Plan 2026');
+  lines.push('Prepared by Muhammad Firdaus Abdullah');
+  lines.push('='.repeat(70));
+  lines.push('');
+
+  lines.push('SECTION A — GOWNING SEQUENCE (12 STEPS)');
+  lines.push('-'.repeat(70));
+  seqOrder.forEach((stepId, idx) => {
+    const step = STEPS.find(s => s.id === stepId);
+    const ok = step.order === idx + 1;
+    lines.push(`${String(idx + 1).padStart(2,' ')}. [${ok ? '✓' : '✗'}] ${step.text}`);
+    if (!ok) lines.push(`     → Correct position: ${step.order}`);
+  });
+  lines.push('');
+  lines.push(`Sequence score: ${seqPts.toFixed(1)} / 4.0  (${seqCorrectCount}/12 correct positions)`);
+  lines.push('');
+
+  lines.push('SECTION B — SPOT THE ERROR');
+  lines.push('-'.repeat(70));
+  ERROR_CARDS.forEach((card, i) => {
+    const flag = errorFlags[card.id] || '(not answered)';
+    const refSel = refSelections[card.id] || '(none)';
+    const refCorrect = card.isError ? (refSelections[card.id] === card.correctRef) : null;
+
+    lines.push(`CARD ${i + 1}`);
+    lines.push(`  Statement : ${card.text}`);
+    lines.push(`  Answer    : ${flag}`);
+    lines.push(`  Correct   : ${card.isError ? 'Error' : 'Correct Practice'}`);
+    if (card.isError){
+      lines.push(`  Ref chosen: ${refSel}`);
+      lines.push(`  Ref correct: ${card.correctRef} — ${REFS.find(r => r.id === card.correctRef).text}`);
+      lines.push(`  Ref match : ${refCorrect ? '✓' : '✗'}`);
+    }
+    lines.push(`  Why       : ${stripTags(card.reason)}`);
+    lines.push('');
+  });
+
+  const total = Math.round((seqPts + errPts + refPts) * 10) / 10;
+
+  lines.push('SCORE SUMMARY');
+  lines.push('-'.repeat(70));
+  lines.push(`Correct Sequence   : ${seqPts.toFixed(1)} / 4.0  (${seqCorrectCount}/12 positions)`);
+  lines.push(`Errors Identified  : ${errPts.toFixed(1)} / 3.0  (${errCorrectCount}/3 correct, ${falsePositives} false flag(s))`);
+  lines.push(`Correct References : ${refPts.toFixed(1)} / 3.0  (${refPts}/3 matches)`);
+  lines.push('-'.repeat(70));
+  lines.push(`TOTAL              : ${total.toFixed(1)} / 10.0`);
+  lines.push('');
+  lines.push('='.repeat(70));
+  lines.push('Generated: ' + new Date().toLocaleString());
+
+  const blob = new Blob([lines.join('\n')], { type:'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'Activity-2-Gowning-Sequence-Results.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showToast('⬇ Results downloaded as .txt');
+});
+
+function stripTags(html){
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  return tmp.textContent.replace(/\s+/g,' ').trim();
+}
+
+/* =========================================================
+   TIMER
+   ========================================================= */
+const TIMER_START = 10 * 60;
+let timeLeft = TIMER_START;
+let timerRunning = false;
+let timerInterval = null;
+
+const clockEl = document.getElementById('clock');
+const timerEl = document.getElementById('timer');
+const startBtn = document.getElementById('startBtn');
+
+function renderClock(){
+  const m = Math.floor(timeLeft / 60);
+  const s = timeLeft % 60;
+  clockEl.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  timerEl.classList.remove('warning','danger');
+  if (timeLeft <= 60) timerEl.classList.add('danger');
+  else if (timeLeft <= 180) timerEl.classList.add('warning');
+}
+
+function tick(){
+  if (timeLeft > 0){
+    timeLeft--;
+    renderClock();
+    if (timeLeft === 60) showToast('⚠ 1 minute remaining!');
+    if (timeLeft === 0){
+      stopTimer();
+      showToast('⏰ Time is up — begin group debrief');
+    }
+  } else {
+    stopTimer();
+  }
+}
+
+function startTimer(){
+  if (timerRunning) return;
+  timerRunning = true;
+  startBtn.textContent = '❚❚';
+  timerInterval = setInterval(tick, 1000);
+}
+
+function stopTimer(){
+  timerRunning = false;
+  startBtn.textContent = '▶';
+  clearInterval(timerInterval);
+}
+
+startBtn.addEventListener('click', () => {
+  timerRunning ? stopTimer() : startTimer();
+});
+
+document.getElementById('resetTimer').addEventListener('click', () => {
+  stopTimer();
+  timeLeft = TIMER_START;
+  renderClock();
+  showToast('↺ Timer reset to 10:00');
+});
+
+renderClock();
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+/* =========================================================
+   BOOT
+   ========================================================= */
+(function init(){
+  seqOrder = shuffle(STEPS.map(s => s.id));
+  renderSequence();
+  errorFlags = {};
+  refSelections = {};
+  renderErrorCards();
+  updateScores();
+})();
+</script>
+</body>
+</html>
