@@ -36,11 +36,23 @@ body{
   cursor:pointer;transition:.18s;font-family:inherit;
   display:inline-flex;align-items:center;gap:6px;
 }
-.tbtn:hover{background:var(--brand-soft);color:var(--brand);border-color:var(--brand)}
+.tbtn:hover:not(:disabled){background:var(--brand-soft);color:var(--brand);border-color:var(--brand)}
+.tbtn:disabled{opacity:.45;cursor:not-allowed}
+.tbtn:disabled:hover{background:var(--surface-2);color:var(--ink-2);border-color:var(--line)}
 .tbtn.primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;border:none}
 .tbtn.primary:hover{filter:brightness(1.08)}
 .timer{display:flex;align-items:center;gap:9px;background:var(--surface-2);
-  border:1px solid var(--line);border-radius:11px;padding:5px 8px 5px 13px}
+  border:1px solid var(--line);border-radius:11px;padding:5px 8px 5px 13px;
+  transition:.3s}
+.timer.locked{
+  border-color:var(--violet);
+  box-shadow:0 0 0 4px rgba(109,40,217,.14);
+  animation:glow 2s ease-in-out infinite;
+}
+@keyframes glow{
+  0%,100%{box-shadow:0 0 0 4px rgba(109,40,217,.14)}
+  50%{box-shadow:0 0 0 8px rgba(109,40,217,.05)}
+}
 .timer .clock{font-family:"SF Mono",Consolas,monospace;font-size:16px;font-weight:800;
   color:var(--brand);letter-spacing:.5px;min-width:62px;text-align:center}
 .timer.warning .clock{color:var(--warn)}
@@ -51,6 +63,21 @@ body{
   font-family:inherit;transition:.18s}
 .timer button:hover{filter:brightness(1.12)}
 .timer button.reset{background:var(--ink-3)}
+.timer.locked #startBtn{
+  background:var(--violet);
+  animation:pulse-btn 1.6s ease-in-out infinite;
+}
+@keyframes pulse-btn{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.14)}
+}
+.timer-hint{
+  font-size:11px;font-weight:800;color:var(--violet);
+  letter-spacing:.5px;text-transform:uppercase;
+  padding:0 6px;transition:.3s;
+  max-width:0;overflow:hidden;white-space:nowrap;
+}
+.timer.locked .timer-hint{max-width:120px}
 .wrap{max-width:1180px;margin:0 auto;padding:30px 22px 40px}
 .hero{background:linear-gradient(135deg,var(--brand-soft),#ffffff 65%);
   border:1px solid var(--line);border-radius:22px;padding:28px 32px;
@@ -90,6 +117,43 @@ h1{font-size:clamp(24px,3.4vw,36px);letter-spacing:-.7px;line-height:1.15;margin
   border-radius:18px;color:#fff;min-width:150px}
 .total-box b{display:block;font-size:40px;line-height:1;letter-spacing:-1.5px}
 .total-box span{font-size:11px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;opacity:.85}
+
+/* ============ LOCK OVERLAY ============ */
+.locked-wrap{position:relative;border-radius:var(--radius);margin-bottom:24px}
+.locked-wrap.locked > .lockable{
+  pointer-events:none;user-select:none;filter:blur(3px) saturate(.6);
+  opacity:.5;transition:.3s;
+}
+.lock-overlay{
+  position:absolute;inset:0;display:none;place-items:center;
+  background:rgba(238,242,246,.72);backdrop-filter:blur(4px);
+  border-radius:var(--radius);z-index:10;
+}
+.locked-wrap.locked .lock-overlay{display:grid}
+.lock-box{
+  background:var(--surface);border:2px solid var(--violet);
+  border-radius:20px;padding:32px 42px;text-align:center;
+  box-shadow:0 24px 48px rgba(109,40,217,.18);max-width:440px;
+  animation:slideIn .4s ease;
+}
+@keyframes slideIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.lock-box .lock-icon{
+  font-size:52px;margin-bottom:10px;line-height:1;
+  display:inline-block;animation:swing 2.4s ease-in-out infinite;
+}
+@keyframes swing{
+  0%,100%{transform:rotate(0)}
+  25%{transform:rotate(-8deg)}
+  75%{transform:rotate(8deg)}
+}
+.lock-box h3{
+  font-size:20px;color:var(--violet);margin-bottom:8px;letter-spacing:-.4px;
+}
+.lock-box p{
+  font-size:13.5px;color:var(--ink-2);line-height:1.6;
+}
+.lock-box p b{color:var(--violet);font-weight:900}
+
 .section{background:var(--surface);border:1px solid var(--line);border-radius:20px;
   box-shadow:var(--shadow);margin-bottom:24px;overflow:hidden}
 .sec-head{display:flex;align-items:center;gap:14px;padding:18px 24px;
@@ -135,10 +199,10 @@ h1{font-size:clamp(24px,3.4vw,36px);letter-spacing:-.7px;line-height:1.15;margin
   cursor:pointer;font-family:inherit;transition:.2s;
   display:inline-flex;align-items:center;gap:8px}
 .btn.primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff}
-.btn.primary:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn.primary:hover:not(:disabled){filter:brightness(1.08);transform:translateY(-1px)}
 .btn.ghost{background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2)}
-.btn.ghost:hover{background:var(--brand-soft);color:var(--brand);border-color:var(--brand)}
-.btn:disabled{opacity:.55;cursor:default;transform:none;filter:none}
+.btn.ghost:hover:not(:disabled){background:var(--brand-soft);color:var(--brand);border-color:var(--brand)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;filter:none}
 .seq-result{margin-left:auto;font-size:13px;font-weight:900;padding:7px 16px;
   border-radius:999px;background:var(--line);color:var(--ink-3);transition:.3s}
 .seq-result.ok{background:var(--ok-soft);color:var(--ok)}
@@ -234,6 +298,7 @@ h1{font-size:clamp(24px,3.4vw,36px);letter-spacing:-.7px;line-height:1.15;margin
   .timer .clock{font-size:14px;min-width:54px}
   .err-grid{grid-template-columns:1fr}
   .debrief{padding:18px 20px}
+  .lock-box{padding:24px 22px;margin:0 12px}
 }
 @media print{
   body{background:#fff;padding:0}
@@ -242,6 +307,8 @@ h1{font-size:clamp(24px,3.4vw,36px);letter-spacing:-.7px;line-height:1.15;margin
   .hero,.scoreboard,.section,.debrief{box-shadow:none;break-inside:avoid;page-break-inside:avoid}
   .err-explain,.err-ref{display:block!important;max-height:none!important;opacity:1!important}
   .seq-item{border:1px solid #999}
+  .locked-wrap.locked > .lockable{filter:none;opacity:1;pointer-events:auto}
+  .lock-overlay{display:none!important}
 }
 </style>
 </head>
@@ -256,12 +323,13 @@ h1{font-size:clamp(24px,3.4vw,36px);letter-spacing:-.7px;line-height:1.15;margin
   </div>
   <div class="spacer"></div>
   <div class="tools">
-    <div class="timer" id="timer">
+    <div class="timer locked" id="timer">
       <span class="clock" id="clock">10:00</span>
-      <button id="startBtn" title="Start / Pause">▶</button>
+      <button id="startBtn" title="Start Timer">▶</button>
       <button class="reset" id="resetTimer" title="Reset timer">↺</button>
+      <span class="timer-hint">Start to unlock</span>
     </div>
-    <button class="tbtn" id="checkAllBtn">✓ Check All</button>
+    <button class="tbtn" id="checkAllBtn" disabled>✓ Check All</button>
     <button class="tbtn" id="printBtn">🖨 Print</button>
     <button class="tbtn" id="resetBtn">↺ Reset</button>
   </div>
@@ -281,10 +349,10 @@ h1{font-size:clamp(24px,3.4vw,36px);letter-spacing:-.7px;line-height:1.15;margin
       <span class="chip">🏆 <b>10 points</b></span>
     </div>
     <ol class="instructions">
-      <li>Your facilitator will provide <b>shuffled gowning step cards</b> for an aseptic gowning procedure.</li>
-      <li>Arrange the cards in the <b>correct order</b> — donning sequence, top-down approach.</li>
+      <li>Press <b>▶ Start</b> on the timer above to unlock the activity — <b>you cannot answer before the timer starts</b>.</li>
+      <li>Arrange the gowning cards in the <b>correct order</b> — donning sequence, top-down approach.</li>
       <li>Identify <b>3 common gowning errors</b> that could compromise sterility.</li>
-      <li>Explain <b>why each error matters</b> — link to EU GMP Annex 1 requirements.</li>
+      <li>Select the correct <b>EU GMP Annex 1</b> reference for each error.</li>
       <li>Present your sequence and findings to the class — <b>2 minutes per group</b>.</li>
     </ol>
   </section>
@@ -310,45 +378,62 @@ h1{font-size:clamp(24px,3.4vw,36px);letter-spacing:-.7px;line-height:1.15;margin
     </div>
   </section>
 
-  <section class="section">
-    <div class="sec-head">
-      <span class="num">A</span>
-      <h2>Arrange the Gowning Sequence</h2>
-      <span class="meta">Drag to reorder · 4 pts</span>
-    </div>
-    <div class="sec-body">
-      <div class="sec-hint">
-        <b>How to play:</b> Drag the cards into the correct top-down sequence — or tap one card, then tap another to swap their positions.
-        Position <b>1</b> is the very first step, position <b>12</b> is the last.
-      </div>
-      <div class="seq-list" id="seqList"></div>
-      <div class="seq-actions">
-        <button class="btn primary" id="checkSeqBtn">✓ Check Sequence</button>
-        <button class="btn ghost" id="shuffleSeqBtn">🔀 Shuffle</button>
-        <span class="seq-result" id="seqResult">Not checked</span>
+  <!-- ================= LOCKED ACTIVITY ================= -->
+  <div class="locked-wrap locked" id="lockedWrap">
+    <div class="lock-overlay">
+      <div class="lock-box">
+        <div class="lock-icon">🔒</div>
+        <h3>Activity Locked</h3>
+        <p>Click <b>▶ Start</b> on the timer above to unlock the sequence cards and error cards.</p>
       </div>
     </div>
-  </section>
 
-  <section class="section">
-    <div class="sec-head">
-      <span class="num">B</span>
-      <h2>Spot the Error — Practice Descriptions</h2>
-      <span class="meta">3 errors · 3 pts · 3 refs</span>
+    <div class="lockable">
+
+      <!-- SECTION A — SEQUENCE -->
+      <section class="section">
+        <div class="sec-head">
+          <span class="num">A</span>
+          <h2>Arrange the Gowning Sequence</h2>
+          <span class="meta">Drag to reorder · 4 pts</span>
+        </div>
+        <div class="sec-body">
+          <div class="sec-hint">
+            <b>How to play:</b> Drag the cards into the correct top-down sequence — or tap one card, then tap another to swap their positions.
+            Position <b>1</b> is the very first step, position <b>12</b> is the last.
+          </div>
+          <div class="seq-list" id="seqList"></div>
+          <div class="seq-actions">
+            <button class="btn primary" id="checkSeqBtn" disabled>✓ Check Sequence</button>
+            <button class="btn ghost" id="shuffleSeqBtn" disabled>🔀 Shuffle</button>
+            <span class="seq-result" id="seqResult">Not checked</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION B — ERROR CARDS -->
+      <section class="section">
+        <div class="sec-head">
+          <span class="num">B</span>
+          <h2>Spot the Error — Practice Descriptions</h2>
+          <span class="meta">3 errors · 3 pts · 3 refs</span>
+        </div>
+        <div class="sec-body">
+          <div class="sec-hint">
+            <b>Read each practice description carefully.</b> Decide whether it is a <b>gowning error</b> or a <b>correct practice</b>.
+            Exactly <b>three</b> of the six cards contain errors — when you flag a card as an error, you must also select the
+            correct <b>EU GMP Annex 1</b> reference that applies.
+          </div>
+          <div class="err-grid" id="errGrid"></div>
+          <div class="err-summary">
+            <button class="btn primary" id="checkErrBtn" disabled>✓ Check Errors &amp; References</button>
+            <span class="seq-result" id="errResult">Not checked</span>
+          </div>
+        </div>
+      </section>
+
     </div>
-    <div class="sec-body">
-      <div class="sec-hint">
-        <b>Read each practice description carefully.</b> Decide whether it is a <b>gowning error</b> or a <b>correct practice</b>.
-        Exactly <b>three</b> of the six cards contain errors — when you flag a card as an error, you must also select the
-        correct <b>EU GMP Annex 1</b> reference that applies.
-      </div>
-      <div class="err-grid" id="errGrid"></div>
-      <div class="err-summary">
-        <button class="btn primary" id="checkErrBtn">✓ Check Errors &amp; References</button>
-        <span class="seq-result" id="errResult">Not checked</span>
-      </div>
-    </div>
-  </section>
+  </div>
 
   <section class="debrief">
     <h3><span class="ic">🎤</span> Debrief — Present Your Findings</h3>
@@ -475,6 +560,8 @@ let falsePositives = 0;
 let errPts = 0;
 let refPts = 0;
 
+let activityLocked = true;
+
 /* =========================================================
    SHUFFLE
    ========================================================= */
@@ -498,7 +585,7 @@ function renderSequence(){
     const step = STEPS.find(s => s.id === stepId);
     const item = document.createElement('div');
     item.className = 'seq-item';
-    item.draggable = true;
+    item.draggable = !activityLocked;
     item.dataset.idx = idx;
     item.dataset.id = stepId;
     item.innerHTML = `
@@ -521,6 +608,7 @@ let dragSrcIdx = null;
 let selectedIdx = null;
 
 seqList.addEventListener('dragstart', e => {
+  if (activityLocked) { e.preventDefault(); return; }
   const item = e.target.closest('.seq-item');
   if (!item) return;
   dragSrcIdx = Number(item.dataset.idx);
@@ -537,6 +625,7 @@ seqList.addEventListener('dragend', e => {
 });
 
 seqList.addEventListener('dragover', e => {
+  if (activityLocked) return;
   e.preventDefault();
   const item = e.target.closest('.seq-item');
   if (!item) return;
@@ -546,6 +635,7 @@ seqList.addEventListener('dragover', e => {
 });
 
 seqList.addEventListener('drop', e => {
+  if (activityLocked) return;
   e.preventDefault();
   const item = e.target.closest('.seq-item');
   if (!item || dragSrcIdx === null) return;
@@ -555,6 +645,7 @@ seqList.addEventListener('drop', e => {
 });
 
 seqList.addEventListener('click', e => {
+  if (activityLocked) return;
   const item = e.target.closest('.seq-item');
   if (!item) return;
   const idx = Number(item.dataset.idx);
@@ -592,6 +683,7 @@ function applySequenceIdleVisuals(){
    CHECK SEQUENCE
    ========================================================= */
 function checkSequence(){
+  if (activityLocked) return;
   seqChecked = true;
   seqCorrectCount = 0;
 
@@ -669,37 +761,39 @@ function renderErrorCards(){
 
     errGrid.appendChild(el);
   });
-
-  errGrid.addEventListener('click', e => {
-    const tog = e.target.closest('.tog');
-    if (!tog) return;
-    const card = tog.closest('.err-card');
-    const id = card.dataset.id;
-    const val = tog.dataset.val;
-
-    if (errorFlags[id] === val){
-      errorFlags[id] = null;
-    } else {
-      errorFlags[id] = val;
-    }
-
-    errChecked = false;
-    applyErrIdleVisuals();
-    renderErrorCardState(id);
-    updateScores();
-  });
-
-  errGrid.addEventListener('change', e => {
-    const sel = e.target.closest('select[data-role="ref"]');
-    if (!sel) return;
-    const card = sel.closest('.err-card');
-    refSelections[card.dataset.id] = sel.value;
-    errChecked = false;
-    applyErrIdleVisuals();
-    renderErrorCardState(card.dataset.id);
-    updateScores();
-  });
 }
+
+errGrid.addEventListener('click', e => {
+  if (activityLocked) return;
+  const tog = e.target.closest('.tog');
+  if (!tog) return;
+  const card = tog.closest('.err-card');
+  const id = card.dataset.id;
+  const val = tog.dataset.val;
+
+  if (errorFlags[id] === val){
+    errorFlags[id] = null;
+  } else {
+    errorFlags[id] = val;
+  }
+
+  errChecked = false;
+  applyErrIdleVisuals();
+  renderErrorCardState(id);
+  updateScores();
+});
+
+errGrid.addEventListener('change', e => {
+  if (activityLocked) return;
+  const sel = e.target.closest('select[data-role="ref"]');
+  if (!sel) return;
+  const card = sel.closest('.err-card');
+  refSelections[card.dataset.id] = sel.value;
+  errChecked = false;
+  applyErrIdleVisuals();
+  renderErrorCardState(card.dataset.id);
+  updateScores();
+});
 
 function renderErrorCardState(id){
   const card = document.querySelector(`.err-card[data-id="${id}"]`);
@@ -714,7 +808,7 @@ function renderErrorCardState(id){
   togs.forEach(t => {
     t.classList.remove('active');
     if (t.dataset.val === flag) t.classList.add('active');
-    t.disabled = false;
+    t.disabled = activityLocked ? true : false;
   });
 
   card.classList.remove('checked-ok','checked-bad','missed');
@@ -759,7 +853,7 @@ function applyErrIdleVisuals(){
     const ex = card.querySelector('[data-role="explain"]');
     ex.classList.remove('show');
     ex.innerHTML = '';
-    card.querySelectorAll('.tog').forEach(t => t.disabled = false);
+    card.querySelectorAll('.tog').forEach(t => t.disabled = activityLocked ? true : false);
     renderErrorCardState(card.dataset.id);
   });
   const res = document.getElementById('errResult');
@@ -771,6 +865,7 @@ function applyErrIdleVisuals(){
    CHECK ERRORS
    ========================================================= */
 function checkErrors(){
+  if (activityLocked) return;
   errChecked = true;
   errCorrectCount = 0;
   falsePositives = 0;
@@ -880,14 +975,52 @@ function updateScores(){
 }
 
 /* =========================================================
+   LOCK / UNLOCK
+   ========================================================= */
+const lockedWrap = document.getElementById('lockedWrap');
+const checkAllBtn = document.getElementById('checkAllBtn');
+const checkSeqBtn = document.getElementById('checkSeqBtn');
+const shuffleSeqBtn = document.getElementById('shuffleSeqBtn');
+const checkErrBtn = document.getElementById('checkErrBtn');
+
+function unlockActivity(){
+  activityLocked = false;
+  lockedWrap.classList.remove('locked');
+  checkAllBtn.disabled = false;
+  checkSeqBtn.disabled = false;
+  shuffleSeqBtn.disabled = false;
+  checkErrBtn.disabled = false;
+  // Re-enable draggable on sequence items
+  seqList.querySelectorAll('.seq-item').forEach(el => el.draggable = true);
+  // Enable error card toggles and selects
+  errGrid.querySelectorAll('.tog').forEach(t => t.disabled = false);
+  errGrid.querySelectorAll('select[data-role="ref"]').forEach(s => s.disabled = false);
+  showToast('🔓 Activity unlocked — begin answering');
+}
+
+function lockActivity(){
+  activityLocked = true;
+  lockedWrap.classList.add('locked');
+  checkAllBtn.disabled = true;
+  checkSeqBtn.disabled = true;
+  shuffleSeqBtn.disabled = true;
+  checkErrBtn.disabled = true;
+  seqList.querySelectorAll('.seq-item').forEach(el => el.draggable = false);
+  errGrid.querySelectorAll('.tog').forEach(t => t.disabled = true);
+  errGrid.querySelectorAll('select[data-role="ref"]').forEach(s => s.disabled = true);
+}
+
+/* =========================================================
    BUTTON WIRING
    ========================================================= */
-document.getElementById('checkSeqBtn').addEventListener('click', () => {
+checkSeqBtn.addEventListener('click', () => {
+  if (activityLocked) return;
   checkSequence();
   showToast(`✓ Sequence scored — ${seqCorrectCount}/12 in the right place`);
 });
 
-document.getElementById('shuffleSeqBtn').addEventListener('click', () => {
+shuffleSeqBtn.addEventListener('click', () => {
+  if (activityLocked) return;
   seqOrder = shuffle(STEPS.map(s => s.id));
   seqChecked = false;
   applySequenceIdleVisuals();
@@ -896,7 +1029,8 @@ document.getElementById('shuffleSeqBtn').addEventListener('click', () => {
   showToast('🔀 Sequence shuffled');
 });
 
-document.getElementById('checkErrBtn').addEventListener('click', () => {
+checkErrBtn.addEventListener('click', () => {
+  if (activityLocked) return;
   const unanswered = ERROR_CARDS.filter(c => !errorFlags[c.id]).length;
   if (unanswered > 0){
     showToast(`⚠ ${unanswered} card(s) still unanswered`);
@@ -906,7 +1040,8 @@ document.getElementById('checkErrBtn').addEventListener('click', () => {
   showToast(`✓ Errors & references scored — ${errCorrectCount}/3 errors`);
 });
 
-document.getElementById('checkAllBtn').addEventListener('click', () => {
+checkAllBtn.addEventListener('click', () => {
+  if (activityLocked) return;
   checkSequence();
   const unanswered = ERROR_CARDS.filter(c => !errorFlags[c.id]).length;
   if (unanswered === 0){
@@ -918,7 +1053,7 @@ document.getElementById('checkAllBtn').addEventListener('click', () => {
 });
 
 document.getElementById('resetBtn').addEventListener('click', () => {
-  if (!confirm('Reset all answers and scores?')) return;
+  if (!confirm('Reset all answers and scores? The activity will lock again.')) return;
 
   seqOrder = shuffle(STEPS.map(s => s.id));
   seqChecked = false;
@@ -946,7 +1081,7 @@ document.getElementById('resetBtn').addEventListener('click', () => {
     tag.style.borderColor = '';
     el.querySelectorAll('.tog').forEach(t => {
       t.classList.remove('active');
-      t.disabled = false;
+      t.disabled = true;
     });
     const sel = el.querySelector('[data-role="ref"]');
     sel.value = '';
@@ -961,9 +1096,12 @@ document.getElementById('resetBtn').addEventListener('click', () => {
   res.className = 'seq-result';
   res.textContent = 'Not checked';
 
+  // Re-lock the activity
+  lockActivity();
+
   updateScores();
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  showToast('↺ Activity reset');
+  showToast('↺ Activity reset — press ▶ Start to unlock');
 });
 
 document.getElementById('printBtn').addEventListener('click', () => window.print());
@@ -1092,6 +1230,10 @@ function stopTimer(){
 }
 
 startBtn.addEventListener('click', () => {
+  if (activityLocked) {
+    unlockActivity();
+    timerEl.classList.remove('locked');
+  }
   timerRunning ? stopTimer() : startTimer();
 });
 
@@ -1099,7 +1241,9 @@ document.getElementById('resetTimer').addEventListener('click', () => {
   stopTimer();
   timeLeft = TIMER_START;
   renderClock();
-  showToast('↺ Timer reset to 10:00');
+  timerEl.classList.add('locked');
+  lockActivity();
+  showToast('↺ Timer reset — press ▶ Start to unlock');
 });
 
 renderClock();
@@ -1125,6 +1269,7 @@ function showToast(msg){
   errorFlags = {};
   refSelections = {};
   renderErrorCards();
+  lockActivity();
   updateScores();
 })();
 </script>
